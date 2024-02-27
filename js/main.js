@@ -52,7 +52,7 @@ function jugar(){
 
         if(palabraGanadora === palabraIngresada){
 
-            alert("GANASTE! \n La palabra correcta es " + palabraIngresada.toUpperCase() + "! \n Y lo hiciste en " + intentos-1 + " intentos")
+            alert("GANASTE! \n La palabra correcta es " + palabraIngresada.toUpperCase() + "!")
 
             fin=true;
             break;
