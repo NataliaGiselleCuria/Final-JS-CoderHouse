@@ -1,16 +1,18 @@
-const dif1 =["switch", "codigo", "objeto", "string"];
-const dif2 =["funcion", "boolean", "arreglo", "console"];
-const dif3 =["variable", "operador", "programa", "lenguaje"];
-const dif4 =["iteracion", "algoritmo", "sentencia", "condicion"];
 
-let palabraGanadora = "";
-let coincidencias=[];
-let letrasCorrectas=[];
-let letrasIncorrectas=[];
-let fin = false;
 
 function jugar(){   
 
+    const dif1 =["switch", "codigo", "objeto", "string"];
+    const dif2 =["funcion", "boolean", "arreglo", "console"];
+    const dif3 =["variable", "operador", "programa", "lenguaje"];
+    const dif4 =["iteracion", "algoritmo", "sentencia", "condicion"];
+
+    let palabraGanadora = "";
+    let coincidencias=[];
+    let letrasCorrectas=[];
+    let letrasIncorrectas=[];
+    let fin = false;
+    
     let intentos = 1; 
     let nivelDificultad = 0;
     let indiceAleatorio =Math.floor(Math.random() * 4);
