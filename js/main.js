@@ -12,7 +12,7 @@ function jugar(){
     let letrasCorrectas=[];
     let letrasIncorrectas=[];
     let fin = false;
-    
+
     let intentos = 1; 
     let nivelDificultad = 0;
     let indiceAleatorio =Math.floor(Math.random() * 4);
@@ -49,8 +49,6 @@ function jugar(){
             palabraIngresada = prompt("La palabra debe tener "+ palabraGanadora.length +" letras.\n Intento "+ intentos +". Ingrese la palabra:");
             palabraIngresada = palabraGanadora.toLowerCase();
         }
-
-        intentos++
 
         if(palabraGanadora === palabraIngresada){
 
@@ -91,6 +89,8 @@ function jugar(){
 
                 alert("INCORRECTO! \n " + palabraIngresada + " no es la pabra correcta, pero te doy una ayuda...  \n\n" + coincidencias + "\n\nLas letras: - "+ letrasIncorrectas +" - NO ESTÁN en la palabra ganadora.");
             }
+
+            intentos++
         }
     }
 }
