@@ -18,10 +18,12 @@ function jugar(){
     let indiceAleatorio =Math.floor(Math.random() * 4);
     
     do{
-        nivelDificultad = parseInt(prompt("Ingresá el numero correspondiente a la dificultad que quieras jugar: \n \n 1. 6 letras \n 2. 7 letras \n 3. 8 letras \n 4. 9 letras"));   
-    } while (nivelDificultad<1 || nivelDificultad>5);
+        nivelDificultad = parseInt(prompt("Ingresá el numero correspondiente a la dificultad que quieras jugar: \n \n 1. 6 letras \n 2. 7 letras \n 3. 8 letras \n 4. 9 letras \n"));   
+        console.log(prompt)
+    } while ((nivelDificultad<1 || nivelDificultad>4) || isNaN(nivelDificultad) || nivelDificultad==null);
     
     switch (nivelDificultad){
+        
         case 1: 
             palabraGanadora = dif1[indiceAleatorio];
             break
@@ -40,7 +42,7 @@ function jugar(){
         coincidencias[i]= " _ ";
     }
    
-    while(intentos < 5 && !fin){
+    while(intentos < 6 && !fin){
 
         let palabraIngresada = prompt("Intento "+ intentos +". \n " + coincidencias + " \nIngrese una palabra de "+ palabraGanadora.length +" letras:");
 
@@ -52,10 +54,9 @@ function jugar(){
 
         if(palabraGanadora === palabraIngresada){
 
-            alert("GANASTE! \n La palabra correcta es " + palabraIngresada.toUpperCase() + "!")
+            alert("GANASTE! \n La palabra correcta es " + palabraGanadora.toUpperCase() + "!")
 
             fin=true;
-            break;
     
         }else{
     
@@ -93,4 +94,9 @@ function jugar(){
             intentos++
         }
     }
+
+    if(intentos==5){
+        alert("Lo siento, se acabaron los intetos :C");
+    }
 }
+
