@@ -126,6 +126,10 @@ keys.forEach(function(key) {
     })
 });
 
+// el juego:
+
+const estadisticas = {jugadas:0, victorias:0, unInt:0, dosInt:0, tresInt:0, cuatroInt:0, cincoInt:0, seisInt:0, perdidas:0};
+const estadisticasAux = {victorias:0, unInt:0, dosInt:0, tresInt:0, cuatroInt:0, cincoInt:0, seisInt:0, perdidas:0};
 
 function jugar(){   
 
@@ -143,6 +147,8 @@ function jugar(){
     let intentos = 1; 
     let nivelDificultad = 0;
     let indiceAleatorio =Math.floor(Math.random() * 4);
+
+    estadisticas.jugadas++  
     
     do{
         nivelDificultad = parseInt(prompt("Ingresá el numero correspondiente a la dificultad que quieras jugar: \n \n 1. 6 letras \n 2. 7 letras \n 3. 8 letras \n 4. 9 letras \n"));   
@@ -189,11 +195,9 @@ function jugar(){
         if(palabraGanadora === palabraIngresada){
 
             alert("GANASTE! \n La palabra correcta es " + palabraGanadora.toUpperCase() + "!")
-
+            estadisticasAux.victorias++;
+            mostrarEstadisticas();
             fin=true;
-
-            console.log(palabraGanadora)
-            console.log(palabraIngresada)
     
         }else{
     
@@ -232,7 +236,42 @@ function jugar(){
         }
     }
 
-    if(intentos==5){
+    if(intentos==6){
         alert("Lo siento, se acabaron los intetos :C");
+        estadisticasAux.perdidas++;
+        mostrarEstadisticas();
+    }
+
+    function mostrarEstadisticas(){
+
+        switch (intentos){
+            case 1: estadisticasAux.unInt++; break;
+            case 2: estadisticasAux.dosInt++; break;
+            case 3: estadisticasAux.tresInt++; break;
+            case 4: estadisticasAux.cuatroInt++; break;
+            case 5: estadisticasAux.cincoInt++; break;
+            case 6: estadisticasAux.seisInt++; break;
+        }
+        
+        estadisticas.victorias = Math.round((estadisticasAux.victorias*100)/estadisticas.jugadas);
+        estadisticas.unInt =     (estadisticasAux.unInt==0)? "0" : Math.round((estadisticasAux.unInt*100)/estadisticas.jugadas);
+        estadisticas.dosInt =    (estadisticasAux.dosInt==0)? "0" : Math.round((estadisticasAux.dosInt*100)/estadisticas.jugadas);
+        estadisticas.tresInt =   (estadisticasAux.tresInt==0)? "0" : Math.round((estadisticasAux.tresInt*100)/estadisticas.jugadas);
+        estadisticas.cuatroInt = (estadisticasAux.cuatroInt==0)? "0" : Math.round((estadisticasAux.cuatroInt*100)/estadisticas.jugadas);
+        estadisticas.cincoInt =  (estadisticasAux.cincoInt==0)? "0" : Math.round((estadisticasAux.cincoInt*100)/estadisticas.jugadas);
+        estadisticas.seisInt =   (estadisticasAux.seisInt==0)? "0" : Math.round((estadisticasAux.seisInt*100)/estadisticas.jugadas);
+        estadisticas.perdidas =  (estadisticasAux.perdidas==0)? "0" : Math.round((estadisticasAux.perdidas*100)/estadisticas.jugadas);
+
+
+        alert( "Jugadas: " + estadisticas.jugadas + 
+               "\n Victorias: " + estadisticasAux.victorias + "(" + estadisticas.victorias + "%)" +
+               "\n 1 intento: " + estadisticasAux.unInt + "(" + estadisticas.unInt + "%)" +
+               "\n 2 intento: " + estadisticasAux.dosInt + "(" + estadisticas.dosInt + "%)" +
+               "\n 3 intento: " + estadisticasAux.tresInt + "(" + estadisticas.tresInt + "%)" +
+               "\n 4 intento: " + estadisticasAux.cuatroInt + "(" + estadisticas.cuatroInt + "%)" +
+               "\n 5 intento: " + estadisticasAux.cincoInt + "(" + estadisticas.cincoInt + "%)" +
+               "\n 6 intento: " + estadisticasAux.seisInt + "(" + estadisticas.seisInt + "%)" +
+               "\n Perdidas: "  + estadisticasAux.perdidas + "(" + estadisticas.perdidas + "%)")
     }
 }
+
