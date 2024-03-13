@@ -4,14 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adivina la palabra</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://kit.fontawesome.com/270cc5acdb.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <main>
+        <section id="head">
+            <div class="title">
+                <h1>ADIVINA LA PALABRA</h1>
+                <h3>MODO PROGRAMACION</h3>
+                <button onclick="jugar()">Jugar</button>
+                <div id="difficulty">
+                    <div class="bar">
+                        <span><i id="levelDown" class="fa-solid fa-angle-left" onclick="setLevel(this)"></i></span>
+                        <div>
+                            <span id="level" class="easy"></span>
+                            <span id="level" ></span>
+                            <span id="level" ></span>
+                            <span id="level" ></span>
+                        </div>
+                        <span><i id="levelUp" class="fa-solid fa-angle-right" onclick="setLevel(this)"></i></span>
+                    </div>
+                    <div>
+                        <p id="levelText">6 LETRAS</p>
+                    </div>
+                </div>
+            </div>
+           <div class="config">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+            <i class="fa-solid fa-moon"></i>
+           </div>
+        </section>
+        <section id="table">
+            <span class="word1">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+            <span class="word2">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+            <span class="word3">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+            <span class="word4">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+            <span class="word5">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+            <span class="word6">
+                <input class="cell" id="letter1"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter2"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter3"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter4"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter5"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+                <input class="cell" id="letter6"  oninput="focusInput(this)" onkeydown="backInput(this, event)" autocomplete="off"></input>
+            </span>
+        </section>
+        <section id="keyboard">
+            <span>
+                    <div class="key correcta">Q</div>
+                    <div class="key presente">W</div>
+                    <div class="key incorrecta">E</div>
+                    <div class="key">R</div>
+                    <div class="key">T</div>
+                    <div class="key">Y</div>
+                    <div class="key">U</div>
+                    <div class="key">I</div>
+                    <div class="key">O</div>
+                    <div class="key">P</div>
+            </span>
+            <span>
+                    <div class="key">A</div>
+                    <div class="key">S</div>
+                    <div class="key">D</div>
+                    <div class="key">F</div>
+                    <div class="key">G</div>
+                    <div class="key">H</div>
+                    <div class="key">J</div>
+                    <div class="key">K</div>
+                    <div class="key">L</div>
+                    <div class="key">Ñ</div>
+            </span>
+            <span>
+                    <div class="key enviar">ENVIAR</div>
+                    <div class="key">Z</div>
+                    <div class="key">X</div>
+                    <div class="key">C</div>
+                    <div class="key">V</div>
+                    <div class="key">B</div>
+                    <div class="key">N</div>
+                    <div class="key">M</div>
+                    <div class="key borrar"><i class="fa-solid fa-delete-left"></i></div>
+               
+            </span>
+        </section>
+    </main>
+    <footer>
 
-    <h1>Adivina la palabra</h1>
-    <h3> Juguemos a adivinar la palabra relacionada con la programación.</h3>
-    <p>Solo tenés 6 intentos!</p>
-    <button id="jugar" onclick="jugar()">Jugar</button>
-    
+    </footer>
     <script src="./js/main.js"></script>
 </body>
 </html>
