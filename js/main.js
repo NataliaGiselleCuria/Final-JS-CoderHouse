@@ -1,246 +1,491 @@
-let primerInput = document.querySelector('.word1').firstElementChild;
-let inputs = document.querySelectorAll('.cell');
-let keys = document.querySelectorAll('.key');
-let levelText = document.querySelectorAll('#levelText');
 let currentLevel = 6;
-let levels = document.querySelectorAll('#level');
+let anableRowNumber = 1;
+const table = document.querySelector('#table');
+const pickLevels = document.querySelectorAll('.pickLevel');
+let palabraGanadora = [];
+let fin = false;
 
-window.onload = function() {
-    primerInput.focus();
-};
+let estadisticas = JSON.parse(localStorage.getItem("estadisticas")) || {jugadas:0, victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};
+let estadisticasAux = JSON.parse(localStorage.getItem("estadisticasAux")) || {victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};   
 
-//Definir dificultad del juego:
-function setLevel(el){
-    if (el.id=="levelDown"){
-        if(currentLevel>6){
-            currentLevel--;
-            levelText[0].innerHTML=currentLevel+" LETRAS";;
-        }
-    }else if (el.id=="levelUp"){
-        if(currentLevel<9){
-            currentLevel++;
-            levelText[0].innerHTML=currentLevel+" LETRAS";
-        }
+localStorage.setItem("estadisticas", JSON.stringify(estadisticas));
+localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAux));
+
+pickLevels.forEach(pick => {
+    pick.addEventListener('click', function(event){
+        setLevel(event.currentTarget);
+    })
+});
+
+setTable(currentLevel);
+setWord(currentLevel);
+setStatistics();
+
+
+
+//*------- tabla:
+// definir nivel del juego (cantidad de letras)
+function setLevel(pickLevel){
+
+    let levelText = document.querySelectorAll('#levelText');
+    let levels = document.querySelectorAll('#level');
+
+    if (pickLevel.id === "levelDown" && currentLevel > 6) {
+        levelText[0].innerHTML = (--currentLevel) + " LETRAS";
+
+    } else if (pickLevel.id === "levelUp" && currentLevel < 9) {
+        levelText[0].innerHTML = (++currentLevel) + " LETRAS";
     }
 
-    switch (currentLevel){
-        case 6: 
-            levels[1].removeAttribute('class');
-            levels[2].removeAttribute('class');
-            levels[3].removeAttribute('class');
-            break;
-        case 7:
-            levels[1].setAttribute('class','normal');
-            levels[2].removeAttribute('class');
-            levels[3].removeAttribute('class');
-            break;
-        case 8:
-            levels[2].setAttribute('class','medium');
-            levels[3].removeAttribute('class');
-            break;
-        case 9:
-            levels[3].setAttribute('class','hard');
-            break;
-    }
-}
+    const levelClasses = ['easy', 'normal', 'medium', 'hard'];
 
-//funciones de las celdas:
-inputs.forEach(function(input) {
-
-    // reasignar valor a un input(celda).
-    input.addEventListener('input', function(event) {
-
-        if (event.target.value.length > 1) {
-            event.target.value = inputValue.charAt(1);
+    levels.forEach((level, index) => {
+        level.removeAttribute('class');
+        if (index === currentLevel - 6) {
+            level.setAttribute('class', levelClasses[index]);
         }
-        
-        focusInput(event.target)
     });
 
-    // agregar clase al input(celda) en foco, y sacarselo a todos los demás.
-    input.addEventListener('focus', function(event) {
-        input.classList.add('cell-focus');
+    cleanTable();
+    setTable(currentLevel);
+    setWord(currentLevel);
+    
+}
 
-        inputs.forEach(el => {
-            if(el!=input){
-                el.classList.remove('cell-focus');
+// crear la tabla a partir del nivel del juego.
+function setTable(currentLevel){
+    let aux = 0;
+
+    do{
+        let aux2 = 1;
+
+        aux++;
+
+        let row = document.createElement('span');
+        row.className= 'row word' + aux;
+
+        do{
+            
+            let cell = document.createElement('input');
+            cell.classList.add('cell');
+            cell.setAttribute('id','letter'+aux2) ;
+            cell.setAttribute('autocomplete','off');
+            row.appendChild(cell);
+            aux2++
+
+        }while(aux2 <= currentLevel);
+       
+        table.appendChild(row);
+
+    }while(aux<=5);
+
+    setTimeout(function(){
+        eventCells();
+        eventKeys();
+        enabledRow(anableRowNumber);
+    }, 0);
+}
+
+// establecer la fila disponible para ingresar la palabra.
+function enabledRow(rowNumber) {
+    const rowsTable = document.querySelectorAll('.row');
+    let focusFirstInputRow;
+
+    rowsTable.forEach(row => {
+        const shouldEnable = row.className.includes(rowNumber);
+        const inputs = row.querySelectorAll('input');
+        
+        if(row.className.includes(rowNumber)){
+            focusFirstInputRow=row
+        }
+
+        inputs.forEach(input => {
+            if (shouldEnable) {
+                input.removeAttribute('disabled');
+            } else {
+                input.setAttribute('disabled', '');
             }
         });
     });
 
-    //evitar que se pierda el foco de las celdas.
-    input.addEventListener('blur', function(event) {
-        let currentInput = event.currentTarget;
-        document.addEventListener('click', function(event) {
-            checkInput(event, currentInput);
+    firstFocus(focusFirstInputRow);
+}
+
+// pone en foco automaticamente el primer input de la fila disponible.
+function firstFocus(row){  
+    let primerInput = row.querySelector('.cell:first-child');
+    primerInput.focus();
+}
+
+function cleanTable(){
+    table.innerHTML="";
+}
+
+
+//*------- funciones de las celdas:
+function eventCells(){
+
+    let inputs = document.querySelectorAll('.cell');
+
+    inputs.forEach(function(input) {
+
+        //focus de las celdas.
+        input.addEventListener('input', function(event) {
+            let currentInput = event.currentTarget;
+            checkFocus(currentInput, event) ;
+        });
+    
+        //borrar celdas por teclado.
+        input.addEventListener('keydown', function (event) {
+    
+            if (event.key === 'Backspace' || event.key === 'Delete') {
+                if (event.currentTarget.value.length === 0) {
+                    if (!event.currentTarget.id.includes('1')) {
+                        event.currentTarget.previousElementSibling.focus();
+                    }
+                }
+            }
+        });
+    
+        // reasignar valor a un input(celda).
+        input.addEventListener('input', function(event) {
+            let currentInput = event.currentTarget;
+            let letter = event.target.value; 
+            
+            if (event.currentTarget.value.length > 1) {
+                input.value = letter.charAt(1);
+            }
+    
+            checkFocus(currentInput,event)
+        });
+    
+        // agregar clase al input(celda) en foco, y sacarselo a todos los demás.
+        input.addEventListener('focus', function(event) {
+            input.classList.add('cell-focus');
+    
+            inputs.forEach(el => {
+                if(el!=input){
+                    el.classList.remove('cell-focus');
+                }
+            });
+        });
+    
+        //evitar que se pierda el foco de las celdas.
+        input.addEventListener('blur', function(event) {
+            let currentInput = event.currentTarget;
+            document.addEventListener('click', function(event) {
+                checkInput(event, currentInput);
+            });
         });
     });
- 
+}
+
+// comprobar si la fila fue completada cuando se preciona 'enter'.
+document.addEventListener('keydown', function(event) {
+    
+    if (event.key ===  "Enter"){
+        const rowsTable = document.querySelectorAll('.row');
+        let currentRow;
+
+        rowsTable.forEach(row => {
+            if(row.classList[1].includes(anableRowNumber)){
+                currentRow = row;
+            }   
+        });
+
+        checkCompleteRow(currentRow)
+    }  
 });
 
+// evitar que el focus se pierda de las celdas.
 function checkInput(event,el){
     if(event.target.tagName == "INPUT" && event.target!=el){
         el.classList.remove('cell-focus');
     }  
 }
 
-// dirigir el foco automaticamente a la próxima celda una vez rellenada la actual.
-function focusInput(currentInput) {
-    if (currentInput.value.length === 1) {
+// redirigir focus a siguiente casilla o anterior segun corresponda.
+function checkFocus(currentInput, event){
+
+    if (currentInput.value.length === 1 && !currentInput.id.includes(currentLevel)) {
         currentInput.nextElementSibling.focus();
     }
-}
-
-//dirigir el foco automaticamente a la celda anterior si se borra el contenido de la actual.
-function backInput(currentInput, event){
+    
     if (event.key === 'Backspace' || event.key === 'Delete') {
         if (currentInput.value.length === 0) {
             if(!currentInput.id.includes('1')){
                 currentInput.previousElementSibling.focus();
             }
         }    
+    } else if (currentInput.value.length === 1 && !currentInput.id.includes(currentLevel)) {
+        event.target.nextElementSibling.focus();
     }
 }
 
-//funciones del teclado:
-keys.forEach(function(key) {
-    key.addEventListener('click', function(event){
-        let letter = event.target.innerHTML;    
-        let cell;
-        inputs.forEach(input => {
-            if(input.className.includes('cell-focus')){
-                if(event.target.innerHTML== 'ENVIAR' ){
+//*------- funciones del teclado:
+function eventKeys(){
+    const keys = document.querySelectorAll('.key');
+    const inputs = document.querySelectorAll('.cell');
 
-                }else if (event.target.className.includes('borrar') || event.target.className.includes('fa-delete-left')){
-                    input.value="";
-                    input.previousElementSibling.focus();
-                }else{
-                    input.value = letter;
+    keys.forEach(function(key) {
+        key.addEventListener('click', function(event){
+            let letter = event.target.innerHTML;    
+            let cell;
+            inputs.forEach(input => {
+                if(input.className.includes('cell-focus')){
+                    if(event.target.innerHTML== 'ENVIAR' ){
+                        const currentRow = input.parentElement;
+                        checkCompleteRow(currentRow);
+
+                    }else if (event.target.className.includes('borrar') || event.target.className.includes('fa-delete-left')){
+                        input.value="";
+                        if(!input.id.includes('1')){
+                            input.previousElementSibling.focus();
+                        }
+                    }else{
+                        input.value = letter;
+                    }
+                    
+                    cell = input;
                 }
-                
-                cell = input;
+            });
+    
+            checkFocus(cell, event);
+        })
+    }); 
+}
+
+//*------- el juego:
+    
+// Asignar palabra ganadora según nivel.
+function setWord(level){
+    palabraGanadora = []
+
+    const wordsLevels = {
+        6: ["switch", "codigo", "objeto", "string", "metodo", "cadena", "return", "evento"],
+        7: ["funcion", "boolean", "arreglo", "console", "contain", "include"],
+        8: ["variable", "operador", "programa", "lenguaje","elemento", "iterador", "integer"],
+        9: ["iteracion", "algoritmo", "sentencia", "condicion","parametro", "constante"]
+    };
+
+    const wordsCurrentLevel = wordsLevels[level];
+
+    let randomIndex = Math.floor(Math.random() * wordsCurrentLevel.length);
+    const palabra = wordsCurrentLevel[randomIndex];
+    
+    for (let i = 0; i < palabra.length; i++) {
+        palabraGanadora.push(palabra.charAt(i))
+    }
+
+    console.log(palabraGanadora)
+
+}
+
+//comprobar si la fila actual fue completada para contunuar.
+function checkCompleteRow(RowToCheck){
+    const currentRow = RowToCheck;
+    const inputs = currentRow.querySelectorAll('input');
+    let complete = true;
+
+    inputs.forEach(input => {
+        if (input.value.trim() === '') {
+            complete = false;
+        }
+    });
+
+    if (complete) {
+
+        checkLetters(currentRow)
+
+    } else {
+        //funcion que avise que la palabra tiene que estar completa.
+    }
+}
+
+//comprobar la palabra ingredasa / letras correctas / letras presentes en la palabra / letras incorrectas.
+function checkLetters(row){
+    const inputs = row.querySelectorAll('input');
+    const keys = document.querySelectorAll('.key');
+    let successes = 0;
+    const attemp = row.classList[1];
+
+    for (let i = 0; i < inputs.length; i++) {
+        const inputLetter = inputs[i].value.toLowerCase();
+
+        // Determinar el estado de la letra actual
+        let letterState;
+        if (palabraGanadora[i] === inputLetter) {
+            letterState = 'correct';
+            successes++
+        } else if (palabraGanadora.includes(inputLetter)) {
+            letterState = 'contain';
+        } else {
+            letterState = 'incorrect';
+        }
+
+        // Agregar clases a los inputs y keys
+        agregarClase(inputs[i], letterState + '-cell');
+
+        keys.forEach(key => {
+            if (key.innerHTML === inputLetter.toUpperCase()) {
+                agregarClase(key, letterState + '-key');
             }
         });
+    }
 
-        focusInput(cell)
-    })
-});
+    function agregarClase(elemento, clase) {
+        if(elemento.classList.contains('key') && elemento.classList.length>=1){
+            elemento.classList.remove(elemento.classList[1]);
+            elemento.classList.add(clase);
+        }else{
+            elemento.classList.add(clase);
+        }  
+    }
 
-// el juego:
+    if (successes == inputs.length){
 
-const estadisticas = {jugadas:0, victorias:0, unInt:0, dosInt:0, tresInt:0, cuatroInt:0, cincoInt:0, seisInt:0, perdidas:0};
-const estadisticasAux = {victorias:0, unInt:0, dosInt:0, tresInt:0, cuatroInt:0, cincoInt:0, seisInt:0, perdidas:0};
+        let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
+
+        for(let estadistica in estadisticasAuxLS){
+            if (estadistica == attemp){
+                estadisticasAuxLS[estadistica]++;
+            }
+        }
+
+        estadisticasAuxLS.victorias++
+
+        localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
+
+        console.log('ganaste')
+
+        finishGame()
+
+    }else{
+
+        if(anableRowNumber!='6'){
+            anableRowNumber++
+            enabledRow(anableRowNumber);
+            console.log(anableRowNumber)
+
+        }else{
+            let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
+
+            estadisticasAuxLS.perdidas++
+
+            localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
+            console.log('perdiste')
+            finishGame()
+        }
+        
+    }
+    
+}
+
+function finishGame(){
+    let estadisticasLS = JSON.parse(localStorage.getItem("estadisticas"));
+    let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
+
+    estadisticasLS.jugadas++
+
+    estadisticasLS.victorias = Math.round((estadisticasAuxLS.victorias*100)/estadisticasLS.jugadas);
+    estadisticasLS.word1 = (estadisticasAuxLS.word1==0)? "0" : Math.round((estadisticasAuxLS.word1*100)/estadisticasLS.jugadas);
+    estadisticasLS.word2 = (estadisticasAuxLS.word2==0)? "0" : Math.round((estadisticasAuxLS.word2*100)/estadisticasLS.jugadas);
+    estadisticasLS.word3 = (estadisticasAuxLS.word3==0)? "0" : Math.round((estadisticasAuxLS.word3*100)/estadisticasLS.jugadas);
+    estadisticasLS.word4 = (estadisticasAuxLS.word4==0)? "0" : Math.round((estadisticasAuxLS.word4*100)/estadisticasLS.jugadas);
+    estadisticasLS.word5 = (estadisticasAuxLS.word5==0)? "0" : Math.round((estadisticasAuxLS.word5*100)/estadisticasLS.jugadas);
+    estadisticasLS.word6 = (estadisticasAuxLS.word6==0)? "0" : Math.round((estadisticasAuxLS.word6*100)/estadisticasLS.jugadas);
+    estadisticasLS.perdidas = (estadisticasAuxLS.perdidas==0)? "0" : Math.round((estadisticasAuxLS.perdidas*100)/estadisticasLS.jugadas);
+
+    localStorage.setItem("estadisticas", JSON.stringify(estadisticasLS));
+    localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
+    
+    setStatistics()
+
+    setTimeout(() => {
+        openStatics();
+    }, 800);
+
+    
+
+}
+
+function setStatistics(){
+    let estadisticasLS = JSON.parse(localStorage.getItem("estadisticas"));
+    let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
+
+    const plays = document.querySelector('#plays')
+    plays.innerHTML = estadisticasLS.jugadas;
+
+    const won = document.querySelector('#won')
+    won.innerHTML = estadisticasLS.victorias;
+
+    // graphic
+
+    const try1Graphic =  document.querySelector('.try-1');
+    const try1Text = document.querySelector('.try-1P');
+    try1Text.innerHTML = estadisticasAuxLS.word1 + ' (' + estadisticasLS.word1 + '%)';
+    try1Graphic.style.width = estadisticasLS.word1 + "%";
+
+    const try2Graphic =  document.querySelector('.try-2');
+    const try2Text = document.querySelector('.try-2P');
+    try2Text.innerHTML = estadisticasAuxLS.word2 + ' (' + estadisticasLS.word2 + '%)';;
+    try2Graphic.style.width = estadisticasLS.word2 + "%";
+
+    const try3Graphic =  document.querySelector('.try-3');
+    const try3Text = document.querySelector('.try-3P');
+    try3Text.innerHTML = estadisticasAuxLS.word3 + ' (' + estadisticasLS.word3 + '%)';;
+    try3Graphic.style.width = estadisticasLS.word3 + "%";
+
+    const try4Graphic =  document.querySelector('.try-4');
+    const try4Text = document.querySelector('.try-4P');
+    try4Text.innerHTML = estadisticasAuxLS.word4 + ' (' + estadisticasLS.word4 + '%)';
+    try4Graphic.style.width = estadisticasLS.word4 + "%";
+    
+    const try5Graphic =  document.querySelector('.try-5');
+    const try5Text = document.querySelector('.try-5P');
+    try5Text.innerHTML = estadisticasAuxLS.word5 + ' (' + estadisticasLS.word5 + '%)';
+    try5Graphic.style.width = estadisticasLS.word5 + "%";
+
+    const try6Graphic =  document.querySelector('.try-6');
+    const try6Text = document.querySelector('.try-6P');
+    try6Text.innerHTML = estadisticasAuxLS.word6 + ' (' + estadisticasLS.word6 + '%)';
+    try6Graphic.style.width = estadisticasLS.word6 + "%";
+
+    const lossGraphic = document.querySelector('.loss');
+    const lossText = document.querySelector('.lossP');
+    lossText.innerHTML = estadisticasAuxLS.perdidas + ' (' + estadisticasLS.perdidas + '%)';
+    lossGraphic.style.width = estadisticasLS.perdidas + "%";
+
+}
+
+//*------- estadisticas:
+
+const showStatistics = document.querySelector('.fa-square-poll-vertical');
+const hideStadistics = document.querySelector('.close');
+const statistics = document.querySelector('#statistics');
+
+showStatistics.addEventListener('click', function(){
+    openStatics();
+})
+
+hideStadistics.addEventListener('click', function(){
+    closeStatics();
+})
+
+function openStatics(){
+    statistics.style.display ='flex';
+}
+
+function closeStatics(){
+    statistics.style.display = 'none';
+} 
+
+
 
 function jugar(){   
 
-    const dif1 =["switch", "codigo", "objeto", "string"];
-    const dif2 =["funcion", "boolean", "arreglo", "console"];
-    const dif3 =["variable", "operador", "programa", "lenguaje"];
-    const dif4 =["iteracion", "algoritmo", "sentencia", "condicion"];
-
-    let palabraGanadora = "";
-    let coincidencias=[];
-    let letrasCorrectas=[];
-    let letrasIncorrectas=[];
-    let fin = false;
-
-    let intentos = 1; 
-    let nivelDificultad = 0;
-    let indiceAleatorio =Math.floor(Math.random() * 4);
-
     estadisticas.jugadas++  
-    
-    do{
-        nivelDificultad = parseInt(prompt("Ingresá el numero correspondiente a la dificultad que quieras jugar: \n \n 1. 6 letras \n 2. 7 letras \n 3. 8 letras \n 4. 9 letras \n"));   
-        console.log(prompt)
-    } while ((nivelDificultad<1 || nivelDificultad>4) || isNaN(nivelDificultad) || nivelDificultad==null);
-    
-    switch (nivelDificultad){
-        
-        case 1: 
-            palabraGanadora = dif1[indiceAleatorio];
-            break
-        case 2: 
-            palabraGanadora = dif2[indiceAleatorio]
-            break
-        case 3: 
-            palabraGanadora = dif3[indiceAleatorio]
-            break
-        case 4: 
-            palabraGanadora = dif4[indiceAleatorio]
-            break
-    }
 
-    for (let i = 0; i < palabraGanadora.length; i++){
-        coincidencias[i]= " _ ";
-    }
-   
-    let palabraIngresada = ""
-
-    while(intentos < 6 && !fin){
-        console.log(intentos)
-
-        do{
-            palabraIngresada = prompt("Intento "+ intentos +". \n " + coincidencias + " \nIngrese una palabra de "+ palabraGanadora.length +" letras:");
-
-        }while(palabraIngresada=="" || palabraIngresada==null);
-       
-        while(palabraIngresada.length != palabraGanadora.length){
-
-            palabraIngresada = prompt("La palabra debe tener "+ palabraGanadora.length +" letras.\n Intento "+ intentos +". Ingrese la palabra:");
-            palabraIngresada = palabraIngresada.toLowerCase();
-        }
-
-
-        if(palabraGanadora === palabraIngresada){
-
-            alert("GANASTE! \n La palabra correcta es " + palabraGanadora.toUpperCase() + "!")
-            estadisticasAux.victorias++;
-            mostrarEstadisticas();
-            fin=true;
-    
-        }else{
-    
-            for (let i = 0; i < palabraGanadora.length; i++) {
-    
-                if ((palabraGanadora.charAt(i) === palabraIngresada.charAt(i))){
-    
-                    coincidencias[i] = " " + palabraIngresada.charAt(i) + " ";
-    
-                } else {
-    
-                    coincidencias[i] = " _ ";
-        
-                    if (palabraGanadora.includes(palabraIngresada.charAt(i)) && (!letrasCorrectas.includes(" "+palabraIngresada.charAt(i)+" "))) {
-    
-                        letrasCorrectas.push(" "+palabraIngresada.charAt(i)+" ");
-    
-                    } else if (!letrasIncorrectas.includes(" "+palabraIngresada.charAt(i)+" ")){
-    
-                        letrasIncorrectas.push(" "+palabraIngresada.charAt(i)+" ");
-                    }
-                }
-    
-            } 
-    
-            if(letrasCorrectas.length>0){
-
-                alert("INCORRECTO! \n " + palabraIngresada + " no es la pabra correcta, pero te doy una ayuda...  \n\n " + coincidencias + "\n\nLas letras: - " + letrasCorrectas + " - ESTÁN en la palabra ganadora. \nLas letras: - "+ letrasIncorrectas +" - NO ESTÁN.");
-            
-            }else{
-
-                alert("INCORRECTO! \n " + palabraIngresada + " no es la pabra correcta, pero te doy una ayuda...  \n\n" + coincidencias + "\n\nLas letras: - "+ letrasIncorrectas +" - NO ESTÁN en la palabra ganadora.");
-            }
-
-            intentos++
-        }
-    }
-
-    if(intentos==6){
-        alert("Lo siento, se acabaron los intetos :C");
-        estadisticasAux.perdidas++;
-        mostrarEstadisticas();
-    }
 
     function mostrarEstadisticas(){
 

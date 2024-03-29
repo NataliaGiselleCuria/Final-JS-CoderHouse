@@ -16,7 +16,7 @@ body {
 
 main {
     height: 95%;
-    width: min-content;
+    width: max-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -59,6 +59,10 @@ h3 {
 
 #levelDown, #levelUp {
     color: #103d5082;
+}
+
+.pickLevel{
+    cursor: pointer;
 }
 
 .bar {
@@ -165,8 +169,28 @@ h3 {
     border: 3px solid #9ab6d9;
 }
 
+.correct-cell{
+    color: white;
+    background: #12c912;
+    border: #12c912;
+}
+
+.contain-cell{   
+    color: white;
+    background: #c98012;
+    border: #c98012;
+}
+
+.incorrect-cell{
+    color: white;
+    background: #afafae87;
+    bosrder: #afafae87;
+}
+
 /*-- Keyboard --*/
 #keyboard{
+    width: fit-content;
+    align-self: center;
     gap: 4px;
     padding: 10px;
     background-color: var(--grey);
@@ -203,34 +227,123 @@ h3 {
     width: 90px;
 }
 
-.correcta {
+.correct-key {
     color: white;
     background: #83d50487;
     box-shadow: 1px 1px 5px 1px #94ed0a00;
 }
 
-.correcta:hover{
+.correct-key:hover{
     background: #66a50587;
 }
 
-.presente {
+.contain-key {
     color: white;
     background: #f1c51c9c;
     box-shadow: 1px 1px 5px 1px #e7b50b00;
 }
 
-.presente:hover{
+.contain-key:hover{
     background: #bf9c179c;
 }
 
-.incorrecta {
+.incorrect-key {
     color: white;
     background: #afafae87;
     box-shadow: 1px 1px 5px 1px #94ed0a00;
 }
 
-.incorrecta:hover{
+.incorrect-key:hover{
     background: #87858587;
 }
 
 
+/*-- Statistics --*/
+
+#statistics {
+    position: absolute;
+    display: none;
+    width: 556px;
+    height: 496px;
+    top: 147px;
+    box-shadow: 0px 1px 5px 1px #e3e3e3;
+    background: white;
+}
+
+.statistics-cont {
+    width: 80%;
+    height: 95%;
+    margin: auto;
+}
+
+.close, .statistics-cont h4{
+    width: 100%;
+    text-align: center;
+}
+
+.statistics-cont h4 {
+    font-size: x-large;
+    letter-spacing: 0.5px;
+    margin: 10px 0;
+    color: var(--font);
+}
+
+.statistics-a {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-family: 'Rubik',sans-serif;
+    margin-top: 25px;
+}
+
+.statistics-a h5 {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    font-size: x-large;
+    font-weight: 400;
+}
+
+.statistics-a p {
+    margin: 0;
+}
+
+.graphic {
+    margin: 30px 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.graphic span {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.graphic span p {
+    font-family: 'Rubik';
+    font-size: larger;
+    margin: 0;
+    width: 15px;
+}
+
+.graphic span div {
+    display: contents;
+}
+
+.graphic span div p {
+    display: contents;
+    font-family: 'Open Sans';
+    font-size: medium;
+}
+
+.graphic span span {
+    width: 77%;
+    height: 70%;
+    padding: 5px;
+    color: white;
+    font-weight: 100;
+    background-color: #4e4b4b;
+    justify-content: right;
+}
