@@ -314,31 +314,31 @@ h3 {
     flex-direction: column;
 }
 
-.graphic span {
+.graphic-row {
     height: 40px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.graphic span p {
+.graphic-row p {
     font-family: 'Rubik';
     font-size: larger;
     margin: 0;
     width: 15px;
 }
 
-.graphic span div {
+.graphic-row div {
     display: contents;
 }
 
-.graphic span div p {
+.graphic-row div p {
     display: contents;
     font-family: 'Open Sans';
     font-size: medium;
 }
 
-.graphic span span {
+.graphic-row span {
     width: 77%;
     height: 70%;
     padding: 5px;
