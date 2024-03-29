@@ -277,8 +277,6 @@ function setWord(level){
         palabraGanadora.push(palabra.charAt(i))
     }
 
-    console.log(palabraGanadora)
-
 }
 
 //comprobar si la fila actual fue completada para contunuar.
@@ -356,8 +354,6 @@ function checkLetters(row){
 
         localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
 
-        console.log('ganaste')
-
         finishGame()
 
     }else{
@@ -365,7 +361,6 @@ function checkLetters(row){
         if(anableRowNumber!='6'){
             anableRowNumber++
             enabledRow(anableRowNumber);
-            console.log(anableRowNumber)
 
         }else{
             let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
@@ -373,7 +368,6 @@ function checkLetters(row){
             estadisticasAuxLS.perdidas++
 
             localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
-            console.log('perdiste')
             finishGame()
         }
         
