@@ -22,7 +22,7 @@ setTable(currentLevel);
 setWord(currentLevel);
 setStatistics();
 
-
+console.log(palabraGanadora)
 //*------- tabla:
 // definir nivel del juego (cantidad de letras)
 function setLevel(pickLevel){
@@ -183,8 +183,7 @@ function eventCells(){
 
 // comprobar si la fila fue completada cuando se preciona 'enter'.
 document.addEventListener('keydown', function(event) {
-    
-    if (event.key ===  "Enter"){
+    if (!fin && event.key ===  "Enter"){
         const rowsTable = document.querySelectorAll('.row');
         let currentRow;
 
@@ -195,8 +194,10 @@ document.addEventListener('keydown', function(event) {
         });
 
         checkCompleteRow(currentRow)
-    }  
+    } 
+   
 });
+
 
 // evitar que el focus se pierda de las celdas.
 function checkInput(event,el){
@@ -395,7 +396,11 @@ function checkLetters(row){
     
 }
 
+
 function finishGame(){
+
+    fin = true;
+    
     let estadisticasLS = JSON.parse(localStorage.getItem("estadisticas"));
     let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
 
@@ -493,44 +498,3 @@ function openStatics(){
 function closeStatics(){
     statistics.style.display = 'none';
 } 
-
-
-
-function jugar(){   
-
-    estadisticas.jugadas++  
-
-
-    function mostrarEstadisticas(){
-
-        switch (intentos){
-            case 1: estadisticasAux.unInt++; break;
-            case 2: estadisticasAux.dosInt++; break;
-            case 3: estadisticasAux.tresInt++; break;
-            case 4: estadisticasAux.cuatroInt++; break;
-            case 5: estadisticasAux.cincoInt++; break;
-            case 6: estadisticasAux.seisInt++; break;
-        }
-        
-        estadisticas.victorias = Math.round((estadisticasAux.victorias*100)/estadisticas.jugadas);
-        estadisticas.unInt =     (estadisticasAux.unInt==0)? "0" : Math.round((estadisticasAux.unInt*100)/estadisticas.jugadas);
-        estadisticas.dosInt =    (estadisticasAux.dosInt==0)? "0" : Math.round((estadisticasAux.dosInt*100)/estadisticas.jugadas);
-        estadisticas.tresInt =   (estadisticasAux.tresInt==0)? "0" : Math.round((estadisticasAux.tresInt*100)/estadisticas.jugadas);
-        estadisticas.cuatroInt = (estadisticasAux.cuatroInt==0)? "0" : Math.round((estadisticasAux.cuatroInt*100)/estadisticas.jugadas);
-        estadisticas.cincoInt =  (estadisticasAux.cincoInt==0)? "0" : Math.round((estadisticasAux.cincoInt*100)/estadisticas.jugadas);
-        estadisticas.seisInt =   (estadisticasAux.seisInt==0)? "0" : Math.round((estadisticasAux.seisInt*100)/estadisticas.jugadas);
-        estadisticas.perdidas =  (estadisticasAux.perdidas==0)? "0" : Math.round((estadisticasAux.perdidas*100)/estadisticas.jugadas);
-
-
-        alert( "Jugadas: " + estadisticas.jugadas + 
-               "\n Victorias: " + estadisticasAux.victorias + "(" + estadisticas.victorias + "%)" +
-               "\n 1 intento: " + estadisticasAux.unInt + "(" + estadisticas.unInt + "%)" +
-               "\n 2 intento: " + estadisticasAux.dosInt + "(" + estadisticas.dosInt + "%)" +
-               "\n 3 intento: " + estadisticasAux.tresInt + "(" + estadisticas.tresInt + "%)" +
-               "\n 4 intento: " + estadisticasAux.cuatroInt + "(" + estadisticas.cuatroInt + "%)" +
-               "\n 5 intento: " + estadisticasAux.cincoInt + "(" + estadisticas.cincoInt + "%)" +
-               "\n 6 intento: " + estadisticasAux.seisInt + "(" + estadisticas.seisInt + "%)" +
-               "\n Perdidas: "  + estadisticasAux.perdidas + "(" + estadisticas.perdidas + "%)")
-    }
-}
-
