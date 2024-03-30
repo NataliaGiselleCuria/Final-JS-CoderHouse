@@ -1,3 +1,4 @@
+
 let currentLevel = 6;
 let anableRowNumber = 1;
 const table = document.querySelector('#table');
@@ -20,7 +21,6 @@ pickLevels.forEach(pick => {
 setTable(currentLevel);
 setWord(currentLevel);
 setStatistics();
-
 
 
 //*------- tabla:
@@ -47,6 +47,7 @@ function setLevel(pickLevel){
     });
 
     cleanTable();
+    cleanKeys();
     setTable(currentLevel);
     setWord(currentLevel);
     
@@ -255,6 +256,15 @@ function eventKeys(){
     }); 
 }
 
+function  cleanKeys(){
+    const keys = document.querySelectorAll('.key');
+    keys.forEach(key => {
+        if(!key.classList.contains('borrar') && !key.classList.contains('enviar') )
+        key.setAttribute('class','key')
+    });
+    
+}
+
 //*------- el juego:
     
 // Asignar palabra ganadora según nivel.
@@ -296,7 +306,17 @@ function checkCompleteRow(RowToCheck){
         checkLetters(currentRow)
 
     } else {
-        //funcion que avise que la palabra tiene que estar completa.
+        const toasts = document.querySelector('#error');
+        const notif = document.createElement('div');
+        notif.classList.add('error');
+        
+        notif.innerText = "La palabra debe estar completa!";
+        toasts.appendChild(notif);
+        
+        setTimeout(() => {
+          notif.remove()
+        }, 2000)
+      
     }
 }
 
