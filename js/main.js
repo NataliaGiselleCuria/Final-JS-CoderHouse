@@ -304,7 +304,6 @@ async function setWord(level){
         // Retornar un arreglo vacío en caso de error
     }
 
-    console.log(palabraGanadora)
 }
 
 //comprobar si la fila actual fue completada para contunuar.

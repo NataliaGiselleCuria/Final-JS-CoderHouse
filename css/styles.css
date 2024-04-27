@@ -404,9 +404,6 @@ h3 {
     box-shadow: 4px 4px 0;
 }
 
-
-
-
 canvas {
     display: none;
     position: absolute;
@@ -418,61 +415,3 @@ canvas {
     transition: all 1s ease-out;
 }
 
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes shake {
-    0% {
-        transform: translateX(0);
-    }
-    25% {
-        transform: translateX(-5px);
-    }
-    50% {
-        transform: translateX(5px);
-    }
-    75% {
-        transform: translateX(-5px);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-.correct-cell {
-    animation: fade-in 0.5s ease;
-    background-color: #7eff7e; /* Color para letras correctas */
-}
-
-.contain-cell {
-    animation: shake 0.5s ease;
-    background-color: #ffeb3b; /* Color para letras contenidas */
-}
-
-.incorrect-cell {
-    animation: shake 0.5s ease;
-    background-color: #ff7043; /* Color para letras incorrectas */
-}
-
-/* Aplicar animaciones a las teclas */
-.correct-key {
-    animation: fade-in 0.5s ease;
-    color: #7eff7e; /* Color para teclas correctas */
-}
-
-.contain-key {
-    animation: shake 0.5s ease;
-    color: #ffeb3b; /* Color para teclas contenidas */
-}
-
-.incorrect-key {
-    animation: shake 0.5s ease;
-    color: #ff7043; /* Color para teclas incorrectas */
-}
