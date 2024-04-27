@@ -1,0 +1,6 @@
+{
+    "6": ["switch", "codigo", "objeto", "string", "metodo", "cadena", "return", "evento"],
+    "7": ["funcion", "boolean", "arreglo", "console", "contain", "include"],
+    "8": ["variable", "operador", "programa", "lenguaje","elemento", "iterador", "integer"],
+    "9": ["iteracion", "algoritmo", "sentencia", "condicion","parametro", "constante"]
+}

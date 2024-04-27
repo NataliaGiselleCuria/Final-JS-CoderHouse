@@ -5,6 +5,7 @@ const table = document.querySelector('#table');
 const pickLevels = document.querySelectorAll('.pickLevel');
 let palabraGanadora = [];
 let fin = false;
+const canvas = document.getElementById("canvas");
 
 let estadisticas = JSON.parse(localStorage.getItem("estadisticas")) || {jugadas:0, victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};
 let estadisticasAux = JSON.parse(localStorage.getItem("estadisticasAux")) || {victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};   
@@ -19,11 +20,14 @@ pickLevels.forEach(pick => {
 });
 
 setTable(currentLevel);
-setWord(currentLevel);
+
+setWord(currentLevel)  // busca la palabra ganadora en el json.
+
 setStatistics();
 
-console.log(palabraGanadora)
+
 //*------- tabla:
+
 // definir nivel del juego (cantidad de letras)
 function setLevel(pickLevel){
 
@@ -50,6 +54,12 @@ function setLevel(pickLevel){
     cleanKeys();
     setTable(currentLevel);
     setWord(currentLevel);
+    anableRowNumber = 1
+    enabledRow(anableRowNumber)
+
+    canvas.style.display="none";
+    closeStatics();
+
     
 }
 
@@ -90,8 +100,7 @@ function setTable(currentLevel){
 // establecer la fila disponible para ingresar la palabra.
 function enabledRow(rowNumber) {
     const rowsTable = document.querySelectorAll('.row');
-    let focusFirstInputRow;
-
+    
     rowsTable.forEach(row => {
         const shouldEnable = row.className.includes(rowNumber);
         const inputs = row.querySelectorAll('input');
@@ -267,27 +276,31 @@ function  cleanKeys(){
 }
 
 //*------- el juego:
-    
-// Asignar palabra ganadora según nivel.
-function setWord(level){
-    palabraGanadora = []
 
-    const wordsLevels = {
-        6: ["switch", "codigo", "objeto", "string", "metodo", "cadena", "return", "evento"],
-        7: ["funcion", "boolean", "arreglo", "console", "contain", "include"],
-        8: ["variable", "operador", "programa", "lenguaje","elemento", "iterador", "integer"],
-        9: ["iteracion", "algoritmo", "sentencia", "condicion","parametro", "constante"]
-    };
+async function setWord(level){
 
-    const wordsCurrentLevel = wordsLevels[level];
+    palabraGanadora = [];
 
-    let randomIndex = Math.floor(Math.random() * wordsCurrentLevel.length);
-    const palabra = wordsCurrentLevel[randomIndex];
-    
-    for (let i = 0; i < palabra.length; i++) {
-        palabraGanadora.push(palabra.charAt(i))
+    try {
+        const response = await fetch('js/wordsLevels.json');
+        const wordsLevels = await response.json();
+
+        const wordsCurrentLevel = wordsLevels[level];
+        if (!wordsCurrentLevel) {
+            throw new Error('No se encontraron palabras para el nivel especificado.');
+        }
+
+        const randomIndex = Math.floor(Math.random() * wordsCurrentLevel.length);
+        const palabra = wordsCurrentLevel[randomIndex];
+
+        for (let i = 0; i < palabra.length; i++) {
+            palabraGanadora.push(palabra.charAt(i))
+        }
+        
+    } catch (error) {
+        console.error(error);
+        // Retornar un arreglo vacío en caso de error
     }
-
 }
 
 //comprobar si la fila actual fue completada para contunuar.
@@ -312,11 +325,19 @@ function checkCompleteRow(RowToCheck){
         notif.classList.add('error');
         
         notif.innerText = "La palabra debe estar completa!";
+
         toasts.appendChild(notif);
-        
+        currentRow.classList.add('animacion');
+
         setTimeout(() => {
           notif.remove()
+          
         }, 2000)
+
+        setTimeout(() => {
+         currentRow.classList.remove('animacion')
+        }, 1000)
+        
       
     }
 }
@@ -374,6 +395,8 @@ function checkLetters(row){
         estadisticasAuxLS.victorias++
 
         localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
+
+        festejo();
 
         finishGame()
 
@@ -498,3 +521,118 @@ function openStatics(){
 function closeStatics(){
     statistics.style.display = 'none';
 } 
+
+function reset(){
+    fin=false;
+    anableRowNumber = 1
+    setLevel('6');
+    enabledRow(anableRowNumber);
+}
+
+
+function festejo() {
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    const context = canvas.getContext("2d");
+    const maxConfettis = 150;
+    const particles = [];
+
+    const possibleColors = [
+        "DodgerBlue",
+        "OliveDrab",
+        "Gold",
+        "Pink",
+        "SlateBlue",
+        "LightBlue",
+        "Gold",
+        "Violet",
+        "PaleGreen",
+        "SteelBlue",
+        "SandyBrown",
+        "Chocolate",
+        "Crimson"
+    ];
+
+    canvas.style.display = "block"
+
+    function randomFromTo(from, to) {
+        return Math.floor(Math.random() * (to - from + 1) + from);
+    }
+
+    function confettiParticle() {
+        this.x = Math.random() * W; // x
+        this.y = Math.random() * H - H; // y
+        this.r = randomFromTo(11, 33); // radius
+        this.d = Math.random() * maxConfettis + 11;
+        this.color =
+            possibleColors[Math.floor(Math.random() * possibleColors.length)];
+        this.tilt = Math.floor(Math.random() * 33) - 11;
+        this.tiltAngleIncremental = Math.random() * 0.07 + 0.05;
+        this.tiltAngle = 0;
+
+        this.draw = function () {
+            context.beginPath();
+            context.lineWidth = this.r / 2;
+            context.strokeStyle = this.color;
+            context.moveTo(this.x + this.tilt + this.r / 3, this.y);
+            context.lineTo(this.x + this.tilt, this.y + this.tilt + this.r / 5);
+            return context.stroke();
+        };
+    }
+
+    function Draw() {
+        const results = [];
+
+        // Magical recursive functional love
+        requestAnimationFrame(Draw);
+
+        context.clearRect(0, 0, W, window.innerHeight);
+
+        for (var i = 0; i < maxConfettis; i++) {
+            results.push(particles[i].draw());
+        }
+
+        let particle = {};
+        let remainingFlakes = 0;
+        for (var i = 0; i < maxConfettis; i++) {
+            particle = particles[i];
+
+            particle.tiltAngle += particle.tiltAngleIncremental;
+            particle.y += (Math.cos(particle.d) + 3 + particle.r / 2) / 2;
+            particle.tilt = Math.sin(particle.tiltAngle - i / 3) * 15;
+
+            if (particle.y <= H) remainingFlakes++;
+
+            // If a confetti has fluttered out of view,
+            // bring it back to above the viewport and let if re-fall.
+            if (particle.x > W + 30 || particle.x < -30 || particle.y > H) {
+                particle.x = Math.random() * W;
+                particle.y = -30;
+                particle.tilt = Math.floor(Math.random() * 10) - 20;
+            }
+        }
+
+        return results;
+    }
+
+    window.addEventListener(
+        "resize",
+        function () {
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        },
+        false
+    );
+
+    // Push new confetti objects to `particles[]`
+    for (var i = 0; i < maxConfettis; i++) {
+        particles.push(new confettiParticle());
+    }
+
+    // Initialize
+    canvas.width = W;
+    canvas.height = H;
+    Draw();
+}

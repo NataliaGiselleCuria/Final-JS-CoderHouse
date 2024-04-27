@@ -1,6 +1,10 @@
 :root{
     --grey: #e3e3e3;
     --font: #4e4b4b;
+    --correct-cell: #87c130;
+    --contain-cell:#e5c132;
+    --incorrect-cell:#afafae87;
+
 }
 
 * {
@@ -31,6 +35,17 @@ main {
     justify-content: center;
     align-items: center;
     
+}
+
+#button {
+    width: 50%;
+    align-self: center;
+    font-size: large;
+    height: 45px;
+    border: none;
+    box-shadow: 2px 2px 5px 3px #80808063;
+    margin-bottom: 15px;
+    color: var(--font);
 }
 
 /*-- Title --*/
@@ -120,6 +135,8 @@ h3 {
 }
 
 .config {
+    position: relative;
+    z-index: 1;
     width: max-content;
     color: var(--font);
 }
@@ -171,23 +188,42 @@ h3 {
 
 .correct-cell{
     color: white;
-    background: #12c912;
-    border: #12c912;
+    background: var(--correct-cell);
+    border: var(--correct-cell);
 }
 
 .contain-cell{   
     color: white;
-    background: #c98012;
-    border: #c98012;
+    background: var(--contain-cell);
+    border: var(--contain-cell);
 }
 
 .incorrect-cell{
     color: white;
-    background: #afafae87;
-    bosrder: #afafae87;
+    background: var(--incorrect-cell);
+    border: var(--incorrect-cell);
+}
+
+@keyframes horizontal-shaking {
+    0% { transform: translateX(0) }
+    25% { transform: translateX(-5px) }
+    75% { transform: translateX(5px) }
+    100% { transform: translateX(0) }
+}
+
+@keyframes change-color {
+    0% { color: inherit}
+    100% { color: white }
+}
+
+.animacion {
+    animation-name: horizontal-shaking;
+    animation-duration: 0.2s; 
+    animation-iteration-count: 3; 
 }
 
 /*-- Keyboard --*/
+
 #keyboard{
     width: fit-content;
     align-self: center;
@@ -264,7 +300,7 @@ h3 {
     position: absolute;
     display: none;
     width: 556px;
-    height: 496px;
+    height: fit-content;
     top: 147px;
     box-shadow: 0px 1px 5px 1px #e3e3e3;
     background: white;
@@ -272,8 +308,11 @@ h3 {
 
 .statistics-cont {
     width: 80%;
-    height: 95%;
-    margin: auto;
+    height: 100%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .close, .statistics-cont h4{
@@ -322,7 +361,7 @@ h3 {
 }
 
 .graphic-row p {
-    font-family: 'Rubik';
+    font-family: 'Rubik',sans-serif;
     font-size: larger;
     margin: 0;
     width: 15px;
@@ -334,7 +373,7 @@ h3 {
 
 .graphic-row div p {
     display: contents;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans',sans-serif;
     font-size: medium;
 }
 
@@ -344,26 +383,37 @@ h3 {
     padding: 5px;
     color: white;
     font-weight: 100;
-    background-color: #4e4b4b;
-    justify-content: right;
+    background-color: var(--correct-cell);
 }
 
 #error{
     position: fixed;
     top: 10px;
-    /* right: 10px; */
     display:flex;
     flex-direction: column;
     align-items: flex-end;
   }
   
 .error{
-background-color:#1d1d1b;
-color: white;
-font-size:small;
-border-radius: 5px;
-padding: 1em 1em;
-margin: 0.5em;
-box-shadow: 4px 4px 0;
+    background-color:#1d1d1b;
+    color: white;
+    font-size:small;
+    border-radius: 5px;
+    padding: 1em 1em;
+    margin: 0.5em;
+    box-shadow: 4px 4px 0;
+}
 
+
+
+
+canvas {
+    display: none;
+    position: absolute;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    transition: all 1s ease-out;
 }
