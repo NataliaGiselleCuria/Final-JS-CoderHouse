@@ -26,6 +26,7 @@ setWord(currentLevel)  // busca la palabra ganadora en el json.
 setStatistics();
 
 
+
 //*------- tabla:
 
 // definir nivel del juego (cantidad de letras)
@@ -127,6 +128,7 @@ function firstFocus(row){
     primerInput.focus();
 }
 
+//limpiar tabla
 function cleanTable(){
     table.innerHTML="";
 }
@@ -301,6 +303,8 @@ async function setWord(level){
         console.error(error);
         // Retornar un arreglo vacío en caso de error
     }
+
+    console.log(palabraGanadora)
 }
 
 //comprobar si la fila actual fue completada para contunuar.
@@ -347,6 +351,7 @@ function checkLetters(row){
     const inputs = row.querySelectorAll('input');
     const keys = document.querySelectorAll('.key');
     let successes = 0;
+    let correctPositions = [];
     const attemp = row.classList[1];
 
     for (let i = 0; i < inputs.length; i++) {
@@ -358,7 +363,11 @@ function checkLetters(row){
             letterState = 'correct';
             successes++
         } else if (palabraGanadora.includes(inputLetter)) {
-            letterState = 'contain';
+            if (correctPositions.includes(i)) {
+                letterState = 'contain';
+            } else {
+                letterState = 'incorrect';
+            }
         } else {
             letterState = 'incorrect';
         }
@@ -371,15 +380,6 @@ function checkLetters(row){
                 agregarClase(key, letterState + '-key');
             }
         });
-    }
-
-    function agregarClase(elemento, clase) {
-        if(elemento.classList.contains('key') && elemento.classList.length>=1){
-            elemento.classList.remove(elemento.classList[1]);
-            elemento.classList.add(clase);
-        }else{
-            elemento.classList.add(clase);
-        }  
     }
 
     if (successes == inputs.length){
@@ -419,7 +419,17 @@ function checkLetters(row){
     
 }
 
+//agregar clase a las letras
+function agregarClase(elemento, clase) {
+    if(elemento.classList.contains('key') && elemento.classList.length>=1){
+        elemento.classList.remove(elemento.classList[1]);
+        elemento.classList.add(clase);
+    }else{
+        elemento.classList.add(clase);
+    }  
+}
 
+// terminar juego
 function finishGame(){
 
     fin = true;
@@ -451,6 +461,7 @@ function finishGame(){
 
 }
 
+//setear estadisticas
 function setStatistics(){
     let estadisticasLS = JSON.parse(localStorage.getItem("estadisticas"));
     let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
@@ -506,22 +517,27 @@ const showStatistics = document.querySelector('.fa-square-poll-vertical');
 const hideStadistics = document.querySelector('.close');
 const statistics = document.querySelector('#statistics');
 
+
 showStatistics.addEventListener('click', function(){
     openStatics();
 })
+
 
 hideStadistics.addEventListener('click', function(){
     closeStatics();
 })
 
+//abrir estadisticas
 function openStatics(){
     statistics.style.display ='flex';
 }
 
+//cerrar estadisticas
 function closeStatics(){
     statistics.style.display = 'none';
 } 
 
+// resetear juego
 function reset(){
     fin=false;
     anableRowNumber = 1
@@ -529,7 +545,7 @@ function reset(){
     enabledRow(anableRowNumber);
 }
 
-
+//animacion de festejo
 function festejo() {
     let W = window.innerWidth;
     let H = window.innerHeight;
