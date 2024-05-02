@@ -15,6 +15,10 @@
     box-sizing: border-box;
 }
 
+html {
+    width: 100%;
+}
+
 body {
     height: 98vh;
     min-height: 800px;
@@ -180,6 +184,7 @@ h3 {
     text-transform: uppercase;
     cursor: pointer;
     caret-color: transparent;
+    touch-action: none;
 }
 
 .cell::-webkit-input-placeholder {
@@ -273,6 +278,7 @@ h3 {
     border-radius: 5px;
     background: white;
     box-shadow: 1px 1px 1px 1px #80808063;
+    touch-action: none;
 }
 
 .key:hover {
@@ -602,7 +608,6 @@ body.active #button{
     }
 
     span.row {
-        height: 15%;
         width: 100%;
         display: flex;
         justify-content: center;
@@ -620,6 +625,20 @@ body.active #button{
         font-size: large;
     }
 
+    .switch {
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch::before {
+        height: 18px;
+        width: 18px;
+    }
+
+    .switch-wrapp {
+        font-size: 12px;
+    }
+
     #keyboard {
         width: 100%;
         padding: 10px 0;
@@ -628,8 +647,9 @@ body.active #button{
     .cell {
         height: 40px;
         width: 40px;
-        margin: 0.5px;
+        margin: 0;
         font-size: 2rem;
+        border: 1px solid var(--grey);
     }
 
 }
