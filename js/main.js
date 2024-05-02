@@ -1,17 +1,105 @@
 
+
+
 let currentLevel = 6;
-let anableRowNumber = 1;
+let enabledRowNumber = 1;
+let currentRow;
 const table = document.querySelector('#table');
 const pickLevels = document.querySelectorAll('.pickLevel');
 let palabraGanadora = [];
-let fin = false;
+let finalized = false;
 const canvas = document.getElementById("canvas");
+let focusFirstInputRow;
 
+//*------- Storage:
+
+//LocalStorag de estadisticas
 let estadisticas = JSON.parse(localStorage.getItem("estadisticas")) || {jugadas:0, victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};
 let estadisticasAux = JSON.parse(localStorage.getItem("estadisticasAux")) || {victorias:0, word1:0, word2:0, word3:0, word4:0, word5:0, word6:0, perdidas:0};   
 
 localStorage.setItem("estadisticas", JSON.stringify(estadisticas));
 localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAux));
+
+//LocalStorage de la jugada
+let savedPlay = JSON.parse(localStorage.getItem("savedPlay")) || {
+    level6:{word1:[], word2:[], word3:[], word4:[], word5:[], word6:[], winningWord:[]},
+    level7:{word1:[], word2:[], word3:[], word4:[], word5:[], word6:[], winningWord:[]},
+    level8:{word1:[], word2:[], word3:[], word4:[], word5:[], word6:[], winningWord:[]},
+    level9:{word1:[], word2:[], word3:[], word4:[], word5:[], word6:[], winningWord:[]}
+};
+localStorage.setItem("savedPlay", JSON.stringify(savedPlay));
+
+//comprobar si hay partida guardada y rellenar la tabla.
+function checkSavedPlay(){
+    let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
+    const keys = document.querySelectorAll('.key');
+    for (let lv in savedPlayLS) {
+        if (savedPlayLS.hasOwnProperty(lv) && lv === 'level' + currentLevel) {
+           
+            for (let word in savedPlayLS[lv]) {
+                if (savedPlayLS[lv][word].length > 0) {
+                    for (let i = 0; i < table.children.length; i++) {
+                        if (word == table.children[i].classList[1]) {
+                            for (let j = 0; j < table.children[i].children.length; j++) {
+                                table.children[i].children[j].value = savedPlayLS[lv][word][j].value
+                                agregarClase(table.children[i].children[j], savedPlayLS[lv][word][j].state + '-cell');
+
+                                keys.forEach(key => {
+                                    if (key.innerHTML === savedPlayLS[lv][word][j].value.toUpperCase()) {
+                                        agregarClase(key, savedPlayLS[lv][word][j].state + '-key');
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    
+                }
+            };
+
+            if(savedPlayLS[lv].winningWord.length>0){
+                palabraGanadora = savedPlayLS[lv].winningWord
+                
+            }
+        }
+    }
+
+    localStorage.setItem("savedPlay", JSON.stringify(savedPlayLS));
+
+    enabledRow();
+}
+
+//asignar una palabra ganadora a cada nivel y guardarlo en Local storage.
+function setWordsLevels(){
+    let levels = 6;
+
+    async function processLevels() {
+        if (levels <= 9) {
+            await setWord(levels);
+            levels++;
+            processLevels();
+        }
+    }
+    
+    processLevels(); // Iniciar el proceso
+}
+
+//vaciar el local storage
+function clenLevelStorage(){
+    let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
+
+    for (let lv in savedPlayLS){
+        if(savedPlayLS.hasOwnProperty(lv) && lv === 'level'+currentLevel){
+            for (let word in savedPlayLS[lv]) {
+                savedPlayLS[lv][word]=([]);
+            };
+        }
+    }
+
+    localStorage.setItem("savedPlay", JSON.stringify(savedPlayLS));
+}
+
+
+//*------- tabla:
 
 pickLevels.forEach(pick => {
     pick.addEventListener('click', function(event){
@@ -19,15 +107,6 @@ pickLevels.forEach(pick => {
     })
 });
 
-setTable(currentLevel);
-
-setWord(currentLevel)  // busca la palabra ganadora en el json.
-
-setStatistics();
-
-
-
-//*------- tabla:
 
 // definir nivel del juego (cantidad de letras)
 function setLevel(pickLevel){
@@ -51,17 +130,12 @@ function setLevel(pickLevel){
         }
     });
 
+    canvas.style.display="none";
     cleanTable();
     cleanKeys();
     setTable(currentLevel);
-    setWord(currentLevel);
-    anableRowNumber = 1
-    enabledRow(anableRowNumber)
+    checkSavedPlay();
 
-    canvas.style.display="none";
-    closeStatics();
-
-    
 }
 
 // crear la tabla a partir del nivel del juego.
@@ -93,33 +167,50 @@ function setTable(currentLevel){
 
     setTimeout(function(){
         eventCells();
-        eventKeys();
-        enabledRow(anableRowNumber);
-    }, 0);
+        setEventKeys();
+        enabledRow();
+    }, 0);   
 }
 
 // establecer la fila disponible para ingresar la palabra.
-function enabledRow(rowNumber) {
-    const rowsTable = document.querySelectorAll('.row');
-    
-    rowsTable.forEach(row => {
-        const shouldEnable = row.className.includes(rowNumber);
-        const inputs = row.querySelectorAll('input');
-        
-        if(row.className.includes(rowNumber)){
-            focusFirstInputRow=row
-        }
+function enabledRow() {
 
-        inputs.forEach(input => {
-            if (shouldEnable) {
-                input.removeAttribute('disabled');
-            } else {
-                input.setAttribute('disabled', '');
-            }
-        });
+    const inputs = table.querySelectorAll('input');
+
+    inputs.forEach(input => {
+         input.setAttribute('disabled', '');   
     });
 
-    firstFocus(focusFirstInputRow);
+    const rowsTable = table.querySelectorAll('.row');
+    let shouldEnable;
+    
+
+    for (let i = 0; i < rowsTable.length; i++) {
+        let complete = true; // Reset complete flag for each row
+        const inputsRow = rowsTable[i].querySelectorAll('input');
+        inputsRow.forEach(input => {
+            if (input.value.trim() === '') {
+                complete = false;
+            }
+        });
+
+        if (!complete) {
+            shouldEnable = rowsTable[i]; 
+            currentRow = rowsTable[i]; 
+            const inputEnabled = shouldEnable.querySelectorAll('input');
+            inputEnabled.forEach(input => {
+                
+                input.removeAttribute('disabled');
+            });
+           
+            break; 
+        }
+    }
+
+    firstFocus(shouldEnable);
+
+    return shouldEnable;
+   
 }
 
 // pone en foco automaticamente el primer input de la fila disponible.
@@ -194,21 +285,11 @@ function eventCells(){
 
 // comprobar si la fila fue completada cuando se preciona 'enter'.
 document.addEventListener('keydown', function(event) {
-    if (!fin && event.key ===  "Enter"){
-        const rowsTable = document.querySelectorAll('.row');
-        let currentRow;
-
-        rowsTable.forEach(row => {
-            if(row.classList[1].includes(anableRowNumber)){
-                currentRow = row;
-            }   
-        });
-
+    if (!finalized && event.key ===  "Enter"){
         checkCompleteRow(currentRow)
     } 
    
 });
-
 
 // evitar que el focus se pierda de las celdas.
 function checkInput(event,el){
@@ -236,18 +317,21 @@ function checkFocus(currentInput, event){
 }
 
 //*------- funciones del teclado:
-function eventKeys(){
+function setEventKeys(){
     const keys = document.querySelectorAll('.key');
-    const inputs = document.querySelectorAll('.cell');
-
     keys.forEach(function(key) {
-        key.addEventListener('click', function(event){
-            let letter = event.target.innerHTML;    
+        key.addEventListener('click', eventKeys)
+    })
+}
+
+function eventKeys(event){
+    const inputs = currentRow.querySelectorAll('.cell');
+    let letter = event.target.innerHTML;    
             let cell;
             inputs.forEach(input => {
                 if(input.className.includes('cell-focus')){
                     if(event.target.innerHTML== 'ENVIAR' ){
-                        const currentRow = input.parentElement;
+                        
                         checkCompleteRow(currentRow);
 
                     }else if (event.target.className.includes('borrar') || event.target.className.includes('fa-delete-left')){
@@ -263,9 +347,7 @@ function eventKeys(){
                 }
             });
     
-            checkFocus(cell, event);
-        })
-    }); 
+             checkFocus(cell, event);
 }
 
 function  cleanKeys(){
@@ -279,35 +361,61 @@ function  cleanKeys(){
 
 //*------- el juego:
 
+// setTable(currentLevel);
+setLevel(currentLevel);
+// checkSavedPlay();
+setWordsLevels();
+setStatistics();
+
+//Busca la palabra ganadora aleatoriamente por nivel en el json
 async function setWord(level){
 
-    palabraGanadora = [];
+    let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
 
     try {
-        const response = await fetch('js/wordsLevels.json');
-        const wordsLevels = await response.json();
-
-        const wordsCurrentLevel = wordsLevels[level];
-        if (!wordsCurrentLevel) {
-            throw new Error('No se encontraron palabras para el nivel especificado.');
-        }
-
-        const randomIndex = Math.floor(Math.random() * wordsCurrentLevel.length);
-        const palabra = wordsCurrentLevel[randomIndex];
-
-        for (let i = 0; i < palabra.length; i++) {
-            palabraGanadora.push(palabra.charAt(i))
-        }
         
+        for(let lv in savedPlayLS){
+            if(savedPlayLS.hasOwnProperty(lv) && lv === 'level'+level){
+                const response = await fetch('js/wordsLevels.json');
+                const wordsLevels = await response.json();
+
+                const wordsCurrentLevel = wordsLevels[level];
+                if (!wordsCurrentLevel) {
+                    throw new Error('No se encontraron palabras para el nivel especificado.');
+                }
+
+                const randomIndex = Math.floor(Math.random() * wordsCurrentLevel.length);
+                const palabra = wordsCurrentLevel[randomIndex];
+
+                if(savedPlayLS[lv].winningWord.length==0){
+                    for (let i = 0; i < palabra.length; i++) {
+                        palabraGanadora = []; 
+                        savedPlayLS[lv].winningWord.push(palabra.charAt(i))
+                        localStorage.setItem("savedPlay", JSON.stringify(savedPlayLS));
+                        palabraGanadora = savedPlayLS['level'+currentLevel].winningWord;
+                    }
+
+                } else {
+
+                    let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
+
+                    palabraGanadora = savedPlayLS['level'+currentLevel].winningWord
+
+                    
+                }  
+            }
+        }
+
     } catch (error) {
         console.error(error);
-        // Retornar un arreglo vacío en caso de error
     }
 
+    
 }
 
 //comprobar si la fila actual fue completada para contunuar.
 function checkCompleteRow(RowToCheck){
+    
     const currentRow = RowToCheck;
     const inputs = currentRow.querySelectorAll('input');
     let complete = true;
@@ -347,6 +455,7 @@ function checkCompleteRow(RowToCheck){
 
 //comprobar la palabra ingredasa / letras correctas / letras presentes en la palabra / letras incorrectas.
 function checkLetters(row){
+
     const inputs = row.querySelectorAll('input');
     const keys = document.querySelectorAll('.key');
     let successes = 0;
@@ -379,6 +488,21 @@ function checkLetters(row){
                 agregarClase(key, letterState + '-key');
             }
         });
+
+        //guarda la palabra en local storage.
+        let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
+
+        for (let lv in savedPlayLS){
+            if(savedPlayLS.hasOwnProperty(lv) && lv === 'level'+currentLevel){
+                for (let value in savedPlayLS[lv]) {
+                    if (savedPlayLS[lv].hasOwnProperty(value) && value === attemp) {
+                        savedPlayLS[lv][value].push({ value: inputLetter, state: letterState });
+                    }
+                }   
+            }
+        }
+
+        localStorage.setItem("savedPlay", JSON.stringify(savedPlayLS));
     }
 
     if (successes == inputs.length){
@@ -395,27 +519,30 @@ function checkLetters(row){
 
         localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
 
+       
+        clenLevelStorage()
         festejo();
-
-        finishGame()
+        finalizedishGame()
 
     }else{
 
-        if(anableRowNumber!='6'){
-            anableRowNumber++
-            enabledRow(anableRowNumber);
+        if(enabledRowNumber!='6'){
+
+            enabledRowNumber++
+            enabledRow(enabledRowNumber);
 
         }else{
+
             let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
 
             estadisticasAuxLS.perdidas++
 
             localStorage.setItem("estadisticasAux", JSON.stringify(estadisticasAuxLS));
-            finishGame()
-        }
-        
-    }
-    
+
+            clenLevelStorage(level);
+            finalizedishGame()
+        } 
+    } 
 }
 
 //agregar clase a las letras
@@ -429,9 +556,9 @@ function agregarClase(elemento, clase) {
 }
 
 // terminar juego
-function finishGame(){
+function finalizedishGame(){
 
-    fin = true;
+    finalized = true;
     
     let estadisticasLS = JSON.parse(localStorage.getItem("estadisticas"));
     let estadisticasAuxLS = JSON.parse(localStorage.getItem("estadisticasAux"));
@@ -456,8 +583,16 @@ function finishGame(){
         openStatics();
     }, 800);
 
-    
+    let savedPlayLS = JSON.parse(localStorage.getItem("savedPlay"));
 
+    for(let lv in savedPlayLS){
+        if(savedPlayLS.hasOwnProperty(lv) && lv === 'level'+currentLevel){
+
+            savedPlayLS[lv].winningWord=([])
+            localStorage.setItem("savedPlay", JSON.stringify(savedPlayLS));
+            setWord(currentLevel);
+        }
+    }
 }
 
 //setear estadisticas
@@ -515,6 +650,7 @@ function setStatistics(){
 const showStatistics = document.querySelector('.fa-square-poll-vertical');
 const hideStadistics = document.querySelector('.close');
 const statistics = document.querySelector('#statistics');
+const playAgain = document.querySelector('#button')
 
 
 showStatistics.addEventListener('click', function(){
@@ -529,6 +665,11 @@ hideStadistics.addEventListener('click', function(){
 //abrir estadisticas
 function openStatics(){
     statistics.style.display ='flex';
+    if(!finalized){
+        playAgain.style.display="none";
+    }else{
+        playAgain.style.display="block"
+    }
 }
 
 //cerrar estadisticas
@@ -538,10 +679,10 @@ function closeStatics(){
 
 // resetear juego
 function reset(){
-    fin=false;
-    anableRowNumber = 1
+    finalized=false;
+    enabledRowNumber = 1
     setLevel('6');
-    enabledRow(anableRowNumber);
+    closeStatics();
 }
 
 //animacion de festejo
@@ -651,3 +792,13 @@ function festejo() {
     canvas.height = H;
     Draw();
 }
+
+//modo oscuro
+
+const switchToggle = document.querySelector(".switch");
+
+switchToggle.addEventListener("click", e =>{
+    switchToggle.classList.toggle("active");
+    document.body.classList.toggle("active");
+})
+

@@ -5,6 +5,10 @@
     --contain-cell:#e5c132;
     --incorrect-cell:#afafae87;
 
+    --background-dark: #1a1a1a;
+    --border-dark: rgb(101 95 95);
+    --font-dark: #ffffffed;
+
 }
 
 * {
@@ -13,14 +17,18 @@
 
 body {
     height: 98vh;
+    min-height: 800px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
 }
 
 main {
+    position: relative;
     height: 95%;
-    width: max-content;
+    width: 80%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,13 +52,13 @@ main {
     height: 45px;
     border: none;
     box-shadow: 2px 2px 5px 3px #80808063;
-    margin-bottom: 15px;
     color: var(--font);
 }
 
 /*-- Title --*/
 
 section#head {
+    position: relative;
     flex-direction: row;
     align-items: baseline;
     margin-bottom: -10px;
@@ -58,7 +66,6 @@ section#head {
 
 .title {
     width: 80%;
-    margin-left: 35px;
     text-align: center;
 }
 
@@ -135,10 +142,23 @@ h3 {
 }
 
 .config {
-    position: relative;
+    position: absolute;
+    left: 10px;
+    top: 0;
     z-index: 1;
     width: max-content;
     color: var(--font);
+}
+
+.switch-wrapp{
+    position: absolute;
+    right: 10px;
+    top: 0;
+    z-index: 1;
+    width: max-content;
+    color: var(--font);
+    font-size: 14px;
+
 }
 
 /*-- Table --*/
@@ -224,15 +244,19 @@ h3 {
 
 /*-- Keyboard --*/
 
-#keyboard{
-    width: fit-content;
+#keyboard {
+    width: 98%;
+    max-width: 600px;
     align-self: center;
     gap: 4px;
     padding: 10px;
     background-color: var(--grey);
+    box-sizing: border-box;
+    border-radius: 10px;
 }
 
 #keyboard span {
+    width: 95%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -241,7 +265,7 @@ h3 {
 
 .key {
     height: 50px;
-    width: 50px;
+    width: 30%;
     padding: 3px;
     display: flex;
     align-items: center;
@@ -256,11 +280,11 @@ h3 {
 }
 
 .key.borrar {
-    width: 64px;
+    width:40%;
 }
 
 .key.enviar {
-    width: 90px;
+    width: 50%;
 }
 
 .correct-key {
@@ -299,20 +323,21 @@ h3 {
 #statistics {
     position: absolute;
     display: none;
-    width: 556px;
-    height: fit-content;
-    top: 147px;
+    width: 100%;
+    height: 70%;
+    top: 110px;
     box-shadow: 0px 1px 5px 1px #e3e3e3;
     background: white;
 }
 
 .statistics-cont {
     width: 80%;
-    height: 100%;
+    min-height: 675px;
     margin: 10px auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 30px;
+    padding-top: 10px;
 }
 
 .close, .statistics-cont h4{
@@ -322,17 +347,23 @@ h3 {
 
 .statistics-cont h4 {
     font-size: x-large;
-    letter-spacing: 0.5px;
-    margin: 10px 0;
+    letter-spacing: 1px;
+    margin: 0;
     color: var(--font);
 }
 
 .statistics-a {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    gap: 10px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.statistics-a div {
+    display: flex;
+    align-self: center;
     gap: 20px;
-    font-family: 'Rubik',sans-serif;
-    margin-top: 25px;
 }
 
 .statistics-a h5 {
@@ -348,7 +379,6 @@ h3 {
 }
 
 .graphic {
-    margin: 30px 0px;
     display: flex;
     flex-direction: column;
 }
@@ -404,6 +434,8 @@ h3 {
     box-shadow: 4px 4px 0;
 }
 
+/*-- Festejo --*/
+
 canvas {
     display: none;
     position: absolute;
@@ -415,3 +447,189 @@ canvas {
     transition: all 1s ease-out;
 }
 
+
+/*-- Dar mode--*/
+
+.switch {
+    width: 50px;
+    height: 24px;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    border-radius: 100px;
+    border: 1px solid var(--font);
+}
+
+.switch::before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    background-color: var(--font);
+    border: 2px solid white;
+    left: 0;
+    right: unset;
+    box-sizing: border-box;
+}
+
+.switch.active::before{
+    right: 0;
+    left: unset;
+}
+
+body.active{
+    background-color: var(--background-dark);
+}
+
+body.active h1{
+    color: var(--font-dark);
+}
+
+body.active .config{
+    color:var(--border-dark)
+}
+
+body.active .switch{
+    color: var(--border-dark);
+    border-color: var(--border-dark);
+}
+
+body.active .switch::before{
+    background: var(--border-dark);
+    border-color: var(--background-dark);
+}
+
+body.active .cell{
+    background-color: var(--background-dark);
+    border-color: var(--border-dark);
+    color: var(--font-dark);
+}
+
+body.active .easy, body.active .normal, body.active .medium, body.active .hard{
+    border-color: var(--background-dark);
+}
+
+body.active #levelUp, body.active #levelDown, body.active #levelText{
+    color: #9ab6d9a6;
+}
+
+body.active .cell-focus{
+    border: 3px solid #9ab6d9;
+}
+
+body.active .correct-cell {
+    background-color: var(--correct-cell);
+}
+
+body.active .contain-cell {
+    background-color: var(--contain-cell);
+}
+
+body.active .incorrect-cell {
+    background-color: var(--incorrect-cell);
+}
+
+body.active section#keyboard {
+    background-color: var(--border-dark);
+}
+
+body.active .key {
+    background-color: var(--background-dark);
+    color: var(--font-dark);
+    box-shadow: 1px 1px 1px 1px #231f1f6e;
+}
+
+body.active .key:hover {
+    background: #87858587
+}
+
+body.active .correct-key {
+    color: white;
+    background: #83d50487;
+    box-shadow: 1px 1px 5px 1px #94ed0a00;
+}
+
+body.active .correct-key:hover{
+    background: #66a50587;
+}
+
+body.active .contain-key {
+    color: white;
+    background: #f1c51c9c;
+    box-shadow: 1px 1px 5px 1px #e7b50b00;
+}
+
+body.active .contain-key:hover{
+    background: #bf9c179c;
+}
+
+body.active .incorrect-key {
+    color: white;
+    background: #afafae87;
+    box-shadow: 1px 1px 5px 1px #94ed0a00;
+}
+
+body.active .incorrect-key:hover{
+    background: #87858587;
+}
+
+body.active #statistics{
+    background-color: var(--background-dark);
+    color: var(--font-dark);
+    box-shadow: none;
+    border: 2px solid var(--border-dark);
+} 
+
+body.active #statistics h4{
+    color: var(--font-dark);
+} 
+
+body.active #button{
+    color: var(--font-dark);
+    box-shadow: 2px 2px 5px 3px var(--border-dark);
+}
+
+@media (max-width: 725px){
+    main{
+        width: 100vw;
+    }
+
+    #table {
+        justify-content: space-between;
+    }
+
+    span.row {
+        height: 15%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 470px){
+
+    body{
+        min-height: unset;
+        height: 100vh;
+    }
+
+    h1 {
+        font-size: large;
+    }
+
+    #keyboard {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .cell {
+        height: 40px;
+        width: 40px;
+        margin: 0.5px;
+        font-size: 2rem;
+    }
+
+}
