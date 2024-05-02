@@ -184,7 +184,7 @@ h3 {
     text-transform: uppercase;
     cursor: pointer;
     caret-color: transparent;
-    touch-action: none;
+    pointer-events: none;
 }
 
 .cell::-webkit-input-placeholder {
@@ -278,7 +278,6 @@ h3 {
     border-radius: 5px;
     background: white;
     box-shadow: 1px 1px 1px 1px #80808063;
-    touch-action: none;
 }
 
 .key:hover {
@@ -645,9 +644,9 @@ body.active #button{
     }
 
     .cell {
-        height: 40px;
-        width: 40px;
-        margin: 0;
+        height: 38px;
+        width: 38px;
+        margin: 0.4px;
         font-size: 2rem;
         border: 1px solid var(--grey);
     }
