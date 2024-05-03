@@ -325,6 +325,13 @@ h3 {
 }
 
 
+i.fa-solid.fa-question {
+    margin-right: 10px;
+}
+
+/*-- Instructions --*/
+
+
 /*-- Statistics --*/
 
 #statistics {
@@ -664,7 +671,7 @@ body.active #button{
     }
 
     #statistics {
-        height: 80%;
+        height: 90%;
         z-index: 3;
     }
 

@@ -760,7 +760,7 @@ function festejo() {
             particle.tiltAngle += particle.tiltAngleIncremental;
             
             if(W<600){
-                console.log(W)
+                
                 particle.y += (Math.sin(particle.d) + 0.0001 + particle.r / 4) / 2;
             } else {
                 particle.y += (Math.cos(particle.d) + 3 + particle.r / 2) / 2;
