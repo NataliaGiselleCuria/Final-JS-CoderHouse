@@ -125,7 +125,7 @@ function setLevel(pickLevel){
 
     levels.forEach((level, index) => {
         level.removeAttribute('class');
-        if (index === currentLevel - 6) {
+        if (index < currentLevel - 5) {
             level.setAttribute('class', levelClasses[index]);
         }
     });
@@ -158,6 +158,11 @@ function setTable(currentLevel){
             cell.setAttribute('autocomplete','off');
             row.appendChild(cell);
             aux2++
+
+            if(window.innerWidth<500){
+                cell.setAttribute('readonly', 'readonly');
+            }
+            
 
         }while(aux2 <= currentLevel);
        
@@ -664,7 +669,7 @@ hideStadistics.addEventListener('click', function(){
 
 //abrir estadisticas
 function openStatics(){
-    statistics.style.display ='flex';
+    statistics.style.top ='5%';
     if(!finalized){
         playAgain.style.display="none";
     }else{
@@ -674,7 +679,7 @@ function openStatics(){
 
 //cerrar estadisticas
 function closeStatics(){
-    statistics.style.display = 'none';
+    statistics.style.top = '110%';
 } 
 
 // resetear juego
@@ -739,9 +744,8 @@ function festejo() {
     function Draw() {
         const results = [];
 
-        // Magical recursive functional love
         requestAnimationFrame(Draw);
-
+        
         context.clearRect(0, 0, W, window.innerHeight);
 
         for (var i = 0; i < maxConfettis; i++) {
@@ -754,7 +758,14 @@ function festejo() {
             particle = particles[i];
 
             particle.tiltAngle += particle.tiltAngleIncremental;
-            particle.y += (Math.cos(particle.d) + 3 + particle.r / 2) / 2;
+            
+            if(W<600){
+                console.log(W)
+                particle.y += (Math.sin(particle.d) + 0.0001 + particle.r / 4) / 2;
+            } else {
+                particle.y += (Math.cos(particle.d) + 3 + particle.r / 2) / 2;
+            }
+            
             particle.tilt = Math.sin(particle.tiltAngle - i / 3) * 15;
 
             if (particle.y <= H) remainingFlakes++;

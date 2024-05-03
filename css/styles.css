@@ -26,6 +26,7 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0;
+    overflow: hidden;
 }
 
 main {
@@ -278,7 +279,7 @@ h3 {
     border-radius: 5px;
     background: white;
     box-shadow: 1px 1px 1px 1px #80808063;
-    pointer-events: none;
+    
 }
 
 .key:hover {
@@ -328,16 +329,16 @@ h3 {
 
 #statistics {
     position: absolute;
-    display: none;
     width: 100%;
     height: 70%;
-    top: 110px;
+    top: 110%;
     box-shadow: 0px 1px 5px 1px #e3e3e3;
     background: white;
+    transition: all 0.3s ease;
 }
 
 .statistics-cont {
-    width: 80%;
+    width: 90%;
     min-height: 675px;
     margin: 10px auto;
     display: flex;
@@ -619,6 +620,7 @@ body.active #button{
     body{
         min-height: unset;
         height: 100vh;
+        min-height: 600px;
     }
 
     h1 {
@@ -644,6 +646,11 @@ body.active #button{
         padding: 10px 0;
     }
 
+    #keyboard span{
+        width: 98%;
+        gap: 2px;
+    }
+
     .cell {
         height: 38px;
         width: 38px;
@@ -656,5 +663,25 @@ body.active #button{
         border-width: 2px;
     }
 
+    #statistics {
+        height: 80%;
+        z-index: 3;
+    }
+
+    .statistics-cont {
+        min-height: unset;
+    }
+
+    .statistics-cont h4 {
+        font-size: larger;
+    }
+
+    .graphic-row p {
+        font-size: medium;
+    }
+
+    #button {
+        width: 70%;
+    }
 
 }
